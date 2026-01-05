@@ -12,11 +12,12 @@ Version:    0.1
 """
 
 import psutil
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QMainWindow,
+#    QMainWindow,
     QRadioButton,
-    QTableWidget,
+#    QTableWidget,
     QTableWidgetItem,
 )
 
@@ -25,7 +26,6 @@ file_version = "0.1"
 changes = {
     "0.1": "Define tab 1 of the table",
 }
-
 
 class DisksTable:
     """Display the disk selection table on the 'Select Disk' Tab."""
@@ -63,7 +63,7 @@ class DisksTable:
         for i in range(len(disks)):
             disk = disks[i]
             if disk[0].startswith("/dev/sd"):
-                self.usb_drives.append(disk[0:3:1])
+                self.usb_drives.append(disk[0:3])
 
     def load_usb_drives(self) -> None:
         """Display the available usb drives"""
@@ -84,16 +84,16 @@ class DisksTable:
         # show the usb drives
         for row in range(1, len(self.usb_drives)):
             self.disk_listing.insertRow(row)
-            button = self.get_radio_button(self.usb_drives[row][0], True)
+            button = self.get_radio_button(self.usb_drives[row][0])
             self.disk_listing.setCellWidget(row, 0, button)
             self.disk_listing.setItem(row, 1, QTableWidgetItem(self.usb_drives[row][1]))
             self.disk_listing.setItem(row, 2, QTableWidgetItem(self.usb_drives[row][2]))
 
-        # resize the table to the entry sizes plus spacing.
-        self.disk_listing.resizeColumnsToContents()
-        self.disk_listing.setColumnWidth(0, self.disk_listing.columnWidth(0) + 40)
-        self.disk_listing.setColumnWidth(1, self.disk_listing.columnWidth(1) + 30)
-        self.disk_listing.setColumnWidth(2, self.disk_listing.columnWidth(2) + 20)
+#        # resize the table to the entry sizes plus spacing.
+#        self.disk_listing.resizeColumnsToContents()
+#        self.disk_listing.setColumnWidth(0, self.disk_listing.columnWidth(0) + 40)
+#        self.disk_listing.setColumnWidth(1, self.disk_listing.columnWidth(1) + 30)
+#        self.disk_listing.setColumnWidth(2, self.disk_listing.columnWidth(2) + 20)
 
     def setup_table(self) -> None:
         """Set the bacic table layout; rows, columns appearance, etc."""
@@ -124,8 +124,8 @@ class DisksTable:
         Returns:
             QRadioButton: The labeled radio button.
         """
-        if truncate:
-            text = text[: len(text) - 1]
+#        if truncate:
+#            text = text[: len(text) - 1]
         radio_button = QRadioButton(text)
         radio_button.clicked.connect(
             lambda: self.parent_window.usb_button_clicked(text)
