@@ -10,11 +10,9 @@ License:    MIT, see file LICENSE
 Version:    0.1
 """
 
-from PySide6.QtWidgets import (
-    QMainWindow,
-)
+from PySide6.QtWidgets import QMainWindow
 
-from bios_paraameters_display_table import BiosParameterDisplay
+from bios_parameters_display import BiosParameterDisplay
 from disks_table import DisksTable
 from ui_main_form import Ui_MainWindow
 
@@ -35,11 +33,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Initialize and run the disk repair program."""
         super().__init__()
         self.setupUi(self)
-        self.usb_drives = []  # the set of usb drives
+        self.current_drive: str = None
+        """The drive selected and being proeccessed."""
+        self.usb_drives = []
+        """The set of usb drives available."""
+
         self.setWindowTitle("Disk Recovery")
         self.initialize_tab_widget()
         DisksTable(self.disk_listing, self)
-        BiosParameterTable(self.bpb_titles, self.bpb_table, self)
+        self.bios_param_display = BiosParameterDisplay(self, self.current_drive)
 
         self.show()
 
@@ -59,3 +61,5 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.tab_widget.setTabVisible(1, True)
         self.tab_widget.setCurrentIndex(1)
+        self.current_drive = button_text
+        self.bios_param_display.fill_table()
