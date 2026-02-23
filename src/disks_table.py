@@ -15,10 +15,12 @@ import psutil
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-#    QMainWindow,
+
+    QLabel,
     QRadioButton,
-#    QTableWidget,
     QTableWidgetItem,
+#    QMainWindow,
+#    QTableWidget,
 )
 
 file_name = "disks_table.py"
@@ -30,17 +32,17 @@ changes = {
 class DisksTable:
     """Display the disk selection table on the 'Select Disk' Tab."""
 
-    def __init__(self, disk_listing: QTableWidget, parent_window: QMainWindow) -> None:
+    def __init__(self, disk_listing: QTableWidget, parent: QMainWindow) -> None:
         """
         Initialize and run the disk repair program.
 
         Parameters:
             disks_listing (QTableWidget): The QTableWidget to fill.
-            parent_window (QMainWindow): The tab requiring the table
+            parent (QMainWindow): The tab requiring the table
         """
         super().__init__()
         self.disk_listing = disk_listing
-        self.parent_window = parent_window
+        self.parent = parent
         self.usb_drives = []  # the set of usb drives
 
         self.get_drives()
@@ -58,12 +60,18 @@ class DisksTable:
          Example for a usb  drive:
             ("/dev/sdc1", "/run/media/<user>/DD8C-10FF", "vfat")
         """
-        self.usb_drives.insert(0, ["USB Drives", "Location", "Type"])
+        def sortFunc(a):
+            print(a)
+            return a[0]
+            
         disks = psutil.disk_partitions(False)
         for i in range(len(disks)):
             disk = disks[i]
             if disk[0].startswith("/dev/sd"):
                 self.usb_drives.append(disk[0:3])
+        # sort the drives in alphnumeric order, then set labels at top.
+        self.usb_drives.sort(key=sortFunc)
+        self.usb_drives.insert(0, ["USB Drives", "Location", "Type"])
 
     def load_usb_drives(self) -> None:
         """Display the available usb drives"""
@@ -82,18 +90,25 @@ class DisksTable:
         self.disk_listing.setItem(row, col + 1, item)
 
         # show the usb drives
-        for row in range(1, len(self.usb_drives)):
-            self.disk_listing.insertRow(row)
-            button = self.get_radio_button(self.usb_drives[row][0])
-            self.disk_listing.setCellWidget(row, 0, button)
-            self.disk_listing.setItem(row, 1, QTableWidgetItem(self.usb_drives[row][1]))
-            self.disk_listing.setItem(row, 2, QTableWidgetItem(self.usb_drives[row][2]))
+        if(len(self.usb_drives) > 1):
+            for row in range(1, len(self.usb_drives)):
+                self.disk_listing.insertRow(row)
+                button = self.get_radio_button(self.usb_drives[row][0])
+                self.disk_listing.setCellWidget(row, 0, button)
+                self.disk_listing.setItem(row, 1, QTableWidgetItem(self.usb_drives[row][1]))
+                self.disk_listing.setItem(row, 2, QTableWidgetItem(self.usb_drives[row][2]))
 
-#        # resize the table to the entry sizes plus spacing.
-#        self.disk_listing.resizeColumnsToContents()
-#        self.disk_listing.setColumnWidth(0, self.disk_listing.columnWidth(0) + 40)
-#        self.disk_listing.setColumnWidth(1, self.disk_listing.columnWidth(1) + 30)
-#        self.disk_listing.setColumnWidth(2, self.disk_listing.columnWidth(2) + 20)
+            # resize the table to the entry sizes plus spacing.
+            self.disk_listing.resizeColumnsToContents()
+            self.disk_listing.setColumnWidth(0, self.disk_listing.columnWidth(0) + 40)
+            self.disk_listing.setColumnWidth(1, self.disk_listing.columnWidth(1) + 30)
+            self.disk_listing.setColumnWidth(2, self.disk_listing.columnWidth(2) + 20)
+        else:
+            self.disk_listing.insertRow(1)
+            item = QTableWidgetItem("No Drives were found")
+            self.disk_listing.setItem(1, 0, QTableWidgetItem(item))
+            self.disk_listing.setSpan(1, 0, 1, 3)
+
 
     def setup_table(self) -> None:
         """Set the bacic table layout; rows, columns appearance, etc."""
@@ -112,7 +127,7 @@ class DisksTable:
 
         If truncate is True, delete the last character of the text. This
         will be a partition numbe of the drive being shown. When working
-        with the boot sectorrs , we are working with the basic disk, not
+        with the boot sectors, we are working with the basic disk, not
         a specific partition.
 
         The action for the radio button click is in the main window.
@@ -124,10 +139,10 @@ class DisksTable:
         Returns:
             QRadioButton: The labeled radio button.
         """
-#        if truncate:
-#            text = text[: len(text) - 1]
+##        if truncate:
+##            text = text[: len(text) - 1]
         radio_button = QRadioButton(text)
         radio_button.clicked.connect(
-            lambda: self.parent_window.usb_button_clicked(text)
+            lambda: self.parent.usb_button_clicked(text)
         )
         return radio_button
