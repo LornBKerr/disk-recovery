@@ -61,7 +61,6 @@ class DisksTable:
             ("/dev/sdc1", "/run/media/<user>/DD8C-10FF", "vfat")
         """
         def sortFunc(a):
-            print(a)
             return a[0]
             
         disks = psutil.disk_partitions(False)
