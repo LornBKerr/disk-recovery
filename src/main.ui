@@ -29,7 +29,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Raw Disk Viewer</string>
+     <string>Raw Drive Image Viewer</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="OpeningTab">
      <attribute name="title">
@@ -67,13 +67,13 @@
        </font>
       </property>
       <property name="text">
-       <string>Select a Disk</string>
+       <string>Select a Drive Image</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QTableWidget" name="disk_listing">
+     <widget class="QTableWidget" name="drive_listing">
       <property name="geometry">
        <rect>
         <x>40</x>
